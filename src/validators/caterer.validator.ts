@@ -22,6 +22,7 @@ export const listCaterersQuerySchema = z.object({
   search: z.string().trim().optional(),
   minPrice: z.coerce.number().nonnegative().optional(),
   maxPrice: z.coerce.number().nonnegative().optional(),
+  sortOrder: z.string().trim().optional()
 });
 
 export type ListCaterersQuery = z.infer<typeof listCaterersQuerySchema>;

@@ -8,10 +8,11 @@ import {
   listCaterersQuerySchema,
   type CreateCatererInput,
 } from "../validators/caterer.validator";
+import { SortOrder } from "mongoose";
 
 export const getCaterers = asyncHandler(async (req: Request, res: Response) => {
   
-  const { search, minPrice, maxPrice } = listCaterersQuerySchema.parse(req.query);
+  const { search, minPrice, maxPrice, sortOrder } = listCaterersQuerySchema.parse(req.query);
 
   const filter: Record<string, unknown> = {};
 
@@ -29,10 +30,13 @@ export const getCaterers = asyncHandler(async (req: Request, res: Response) => {
     filter.pricePerPlate = price;
   }
 
-  const caterers = await Caterer.find(filter).sort({
-                                rating: -1, updatedAt: -1,
-                              }
-                            )
+
+  const sortOptions: Record<string, SortOrder> = sortOrder?.trim() 
+      ? { updatedAt: sortOrder?.toLocaleLowerCase() === "asc" ? 1 : -1 }
+      : { rating: -1, updatedAt: -1, }
+
+
+  const caterers = await Caterer.find(filter).sort(sortOptions)
 
   return ApiResponse.success(res, 200, caterers, "Caterers fetched successfully");
 
